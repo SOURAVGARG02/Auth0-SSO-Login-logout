@@ -1,4 +1,4 @@
-const { X509Certificate } = require('crypto');
+const { createPrivateKey, X509Certificate } = require('crypto');
 
 const DEFAULT_ISSUER = 'urn:paxafe:saml-demo';
 
@@ -20,6 +20,13 @@ function readConfig() {
   const idpCert = (process.env.SAML_IDP_CERT || process.env.AUTH0_SAML_CERT || '')
     .replace(/\\n/g, '\n')
     .trim();
+  const logoutUrl = (process.env.SAML_LOGOUT_URL || '').trim();
+  const spPrivateKey = (process.env.SAML_SP_PRIVATE_KEY || '')
+    .replace(/\\n/g, '\n')
+    .trim();
+  const spCert = (process.env.SAML_SP_CERT || '')
+    .replace(/\\n/g, '\n')
+    .trim();
   const issuer = process.env.SAML_ISSUER || DEFAULT_ISSUER;
   const callbackUrl = process.env.SAML_CALLBACK_URL || `${appBaseUrl}/auth/saml/acs`;
 
@@ -31,6 +38,10 @@ function readConfig() {
     entryPoint: appendConnection(entryPoint, connection),
     idpInitiatedUrl: appendConnection(idpInitiatedUrl, connection),
     idpCert,
+    logoutUrl,
+    logoutCallbackUrl: `${appBaseUrl}/auth/saml/logout`,
+    spPrivateKey,
+    spCert,
     auth0Domain: (process.env.AUTH0_DOMAIN || '').replace(/\/+$/, ''),
     auth0ClientId: process.env.AUTH0_CLIENT_ID || '',
     sessionSecret: process.env.SESSION_SECRET || '',
@@ -76,6 +87,49 @@ function ensureSamlConfiguration(config = readConfig()) {
   return { configured: true, message: 'SAML configuration is present.' };
 }
 
+function getSloStatus(config = readConfig()) {
+  const hasAnySetting = Boolean(config.logoutUrl || config.spPrivateKey || config.spCert);
+  if (!hasAnySetting) {
+    return {
+      configured: false,
+      message: 'SAML Single Logout is not configured; local logout remains available.',
+    };
+  }
+
+  if (!config.logoutUrl || !config.spPrivateKey || !config.spCert) {
+    return {
+      configured: false,
+      message: 'SAML Single Logout requires SAML_LOGOUT_URL, SAML_SP_PRIVATE_KEY, and SAML_SP_CERT.',
+    };
+  }
+
+  try {
+    const logoutUrl = new URL(config.logoutUrl);
+    const appUrl = new URL(config.appBaseUrl);
+    const callbackUrl = new URL(config.logoutCallbackUrl);
+    const privateKey = createPrivateKey(config.spPrivateKey);
+    const certificate = new X509Certificate(config.spCert);
+
+    if (logoutUrl.protocol !== 'https:' || appUrl.protocol !== 'https:' ||
+        callbackUrl.protocol !== 'https:' || callbackUrl.origin !== appUrl.origin) {
+      throw new Error('SAML Single Logout requires HTTPS IdP and same-origin SP callback URLs.');
+    }
+    if (!certificate.checkPrivateKey(privateKey)) {
+      throw new Error('SAML_SP_CERT does not match SAML_SP_PRIVATE_KEY.');
+    }
+  } catch (error) {
+    return {
+      configured: false,
+      message: `SAML Single Logout configuration is invalid: ${error.message}`,
+    };
+  }
+
+  return {
+    configured: true,
+    message: 'SAML Single Logout is configured.',
+  };
+}
+
 function createSamlOptions(config = readConfig()) {
   const status = ensureSamlConfiguration(config);
   if (!status.configured) {
@@ -97,6 +151,14 @@ function createSamlOptions(config = readConfig()) {
     requestIdExpirationPeriodMs: 5 * 60 * 1000,
     acceptedClockSkewMs: 2 * 60 * 1000,
     maxAssertionAgeMs: 5 * 60 * 1000,
+    ...(getSloStatus(config).configured ? {
+      logoutUrl: config.logoutUrl,
+      logoutCallbackUrl: config.logoutCallbackUrl,
+      privateKey: config.spPrivateKey,
+      publicCert: config.spCert,
+      signatureAlgorithm: 'sha256',
+      digestAlgorithm: 'sha256',
+    } : {}),
   };
 }
 
@@ -104,5 +166,6 @@ module.exports = {
   DEFAULT_ISSUER,
   readConfig,
   ensureSamlConfiguration,
+  getSloStatus,
   createSamlOptions,
 };

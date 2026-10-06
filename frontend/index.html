@@ -15,6 +15,7 @@
       <p class="lede">Explore how a SAML Service Provider and Identity Provider establish a trusted session.</p>
     </section>
     <section id="signed-out" class="panel">
+      <p id="logout-result" class="logout-result" hidden>Your local app session has ended.</p>
       <div class="panel-title"><span>01</span><div><h2>Choose a sign-in flow</h2><p>Both flows use the same Auth0 tenant and SAML connection.</p></div></div>
       <div class="flows">
         <article><span class="tag">SP-INITIATED</span><h3>Start from this app</h3><p>The app sends an AuthnRequest to Auth0. Auth0 returns a signed assertion to the ACS.</p><a class="button primary" href="/auth/saml/login">Login with SSO <b>↗</b></a></article>
@@ -26,7 +27,8 @@
       <div class="panel-title"><span>02</span><div><h2>Authenticated session</h2><p id="flow-label"></p></div></div>
       <div class="identity"><div class="avatar" id="avatar">?</div><div><small>LOGGED IN AS</small><h3 id="identity-name"></h3><p id="identity-email"></p></div><span class="verified">✓ Assertion accepted</span></div>
       <details><summary>Assertion identity details</summary><pre id="claims"></pre></details>
-      <form action="/auth/logout" method="post"><button class="button secondary">End local session</button></form>
+      <form action="/auth/logout" method="post"><button class="button secondary">Log out</button></form>
+      <p id="logout-status" class="logout-status"></p>
     </section>
     <footer><span>LOCAL DEMO · AUTH0 AS IdP · NODE AS SP</span><a href="/auth/saml/metadata">SP METADATA ↗</a></footer>
   </main>

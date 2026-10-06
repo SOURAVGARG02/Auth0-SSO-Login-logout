@@ -1,7 +1,7 @@
-const test = require('node:test');
-const assert = require('node:assert/strict');
+const { describe, test, expect } = require('@jest/globals');
 const { ReplayCache } = require('../src/saml/replay-cache');
 
+describe('ReplayCache', () => {
 test('claims each assertion ID only once until the replay window expires', () => {
   let now = 1000;
   const cache = new ReplayCache({
@@ -10,11 +10,11 @@ test('claims each assertion ID only once until the replay window expires', () =>
     now: () => now,
   });
 
-  assert.equal(cache.claim('_assertion-1'), true);
-  assert.equal(cache.claim('_assertion-1'), false);
+  expect(cache.claim('_assertion-1')).toBe(true);
+  expect(cache.claim('_assertion-1')).toBe(false);
 
   now += 100;
-  assert.equal(cache.claim('_assertion-1'), true);
+  expect(cache.claim('_assertion-1')).toBe(true);
 });
 
 test('fails closed when the bounded cache is full of unexpired assertions', () => {
@@ -24,15 +24,13 @@ test('fails closed when the bounded cache is full of unexpired assertions', () =
     now: () => 1000,
   });
 
-  assert.equal(cache.claim('_assertion-1'), true);
-  assert.throws(
-    () => cache.claim('_assertion-2'),
-    /replay cache is full/
-  );
+  expect(cache.claim('_assertion-1')).toBe(true);
+  expect(() => cache.claim('_assertion-2')).toThrow(/replay cache is full/);
 });
 
 test('rejects an empty assertion ID', () => {
   const cache = new ReplayCache({ ttlMs: 100, maxEntries: 1 });
 
-  assert.throws(() => cache.claim(''), /non-empty assertion ID/);
+  expect(() => cache.claim('')).toThrow(/non-empty assertion ID/);
+});
 });

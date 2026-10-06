@@ -13,6 +13,10 @@ fetch('/api/config')
       message.hidden = false;
       message.textContent = 'SAML is not configured yet. Set the Auth0 SAML entry point and signing certificate in .env.';
     }
+    const logoutStatus = document.querySelector('#logout-status');
+    logoutStatus.textContent = config.samlLogoutConfigured
+      ? 'SAML Single Logout is enabled. Sign out here or initiate logout from the Auth0 IdP.'
+      : config.samlLogoutMessage || 'Logout ends the local session; Auth0 logout is optional.';
   })
   .catch(() => {
     document.querySelector('#acs-url').textContent = `${window.location.origin}/auth/saml/acs`;
@@ -43,4 +47,8 @@ fetch('/auth/me')
 if (new URLSearchParams(location.search).has('error')) {
   message.hidden = false;
   message.textContent = 'SAML sign-in failed. Check server logs and Auth0/SAML settings.';
+}
+
+if (new URLSearchParams(location.search).get('flow') === 'logout') {
+  document.querySelector('#logout-result').hidden = false;
 }

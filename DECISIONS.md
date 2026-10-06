@@ -24,11 +24,11 @@ This is a single-tenant localhost demo. Auth0 is the SAML IdP and this Node serv
 
 - Express sessions use an HTTP-only, SameSite=Lax cookie and a 30-minute lifetime. The default Express in-memory store is intentionally limited to this demo; production should use a shared store, HTTPS-only cookies, explicit CSRF protections, and session revocation policy.
 - No user database is built. If JIT provisioning is added, key the external identity by trusted IdP issuer plus immutable SAML NameID. Email is mutable and should not be the only durable key. Account linking requires a verified-email or administrator-approved policy.
-- Logout destroys the local session and, if configured, redirects through Auth0's logout endpoint. It is not SAML Single Logout and does not handle IdP-originated logout requests. Local application session state remains the authorization source of truth; remote logout may fail or be unavailable.
+- When the Auth0 tenant exposes SAML SLO, SP logout sends a signed LogoutRequest and validates the correlated LogoutResponse; the callback handles signed IdP LogoutRequests and removes the Passport identity. Local app session state remains the authorization source of truth. SLO requires a public HTTPS callback and an SP key pair. If SLO is unavailable or unconfigured, local logout still destroys the session and may redirect through Auth0 `/v2/logout`; that fallback cannot notify the SP of a separate IdP-originated logout.
 
 ## Scope and follow-up
 
-The Auth0 tenant, test account, HTTPS deployment, multi-tenant configuration, signing-certificate rotation, authorization, and persistent user provisioning are outside the supplied assignment inputs. First, configure a disposable Auth0 tenant and exercise both login flows. Then add negative integration tests for duplicate assertions, invalid signatures, wrong audience/recipient, and expired assertions; move session and replay/request caches to shared stores before multi-instance deployment.
+The Auth0 tenant, test account, HTTPS deployment, multi-tenant configuration, signing-certificate rotation, authorization, and persistent user provisioning are outside the supplied assignment inputs. Configure a disposable Auth0 tenant and exercise both login flows and (if the tenant supports it) both logout directions. Then add negative integration tests for duplicate assertions, invalid signatures, wrong audience/recipient, and expired assertions; move session and replay/request caches to shared stores before multi-instance deployment.
 
 ## AI use
 

@@ -3,10 +3,16 @@ const { Strategy } = require('@node-saml/passport-saml');
 const {
   readConfig,
   ensureSamlConfiguration,
+  getSloStatus,
   createSamlOptions,
 } = require('../config/saml');
 const { ReplayCache } = require('../saml/replay-cache');
-const { getAssertionId, hasExpectedRecipient } = require('../saml/profile');
+const {
+  getAssertionId,
+  hasExpectedRecipient,
+  loginFlowFor,
+  matchesLogoutProfile,
+} = require('../saml/profile');
 
 const REPLAY_CACHE_TTL_MS = 10 * 60 * 1000;
 const replayCache = new ReplayCache({
@@ -40,6 +46,13 @@ passport.deserializeUser((user, done) => done(null, user));
 
 const config = readConfig();
 const samlStatus = ensureSamlConfiguration(config);
+const configuredLogoutStatus = getSloStatus(config);
+const samlLogoutStatus = samlStatus.configured
+  ? configuredLogoutStatus
+  : {
+    configured: false,
+    message: 'SAML Single Logout requires valid SAML IdP login configuration.',
+  };
 let strategy = null;
 
 if (samlStatus.configured) {
@@ -82,8 +95,17 @@ if (samlStatus.configured) {
         givenName: firstString(profile.givenName),
         surname: firstString(profile.sn),
         sessionIndex: firstString(profile.sessionIndex),
-        loginFlow: profile.inResponseTo ? 'SP-initiated login' : 'IdP-initiated login',
+        loginFlow: loginFlowFor(profile),
       });
+    },
+    (req, profile, done) => {
+      if (!req.user) {
+        return done(null, req.user);
+      }
+      if (!matchesLogoutProfile(req.user, profile)) {
+        return done(null, null);
+      }
+      return done(null, req.user);
     }
   );
   passport.use('saml', strategy);
@@ -93,5 +115,6 @@ module.exports = {
   passport,
   strategy,
   samlStatus,
+  samlLogoutStatus,
   replayCache,
 };

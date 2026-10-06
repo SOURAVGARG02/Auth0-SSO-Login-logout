@@ -3,7 +3,7 @@ require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
 
 const express = require('express');
 const session = require('express-session');
-const { passport, samlStatus } = require('./auth/passport');
+const { passport, samlStatus, samlLogoutStatus } = require('./auth/passport');
 const authRoutes = require('./routes/auth');
 const { readConfig } = require('./config/saml');
 
@@ -26,9 +26,9 @@ app.use(session({
   saveUninitialized: false,
   cookie: {
     maxAge: 30 * 60 * 1000,
-    sameSite: 'lax',
+    sameSite: samlLogoutStatus.configured ? 'none' : 'lax',
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
+    secure: samlLogoutStatus.configured || process.env.NODE_ENV === 'production',
   },
 }));
 app.use(passport.initialize());
@@ -47,6 +47,8 @@ app.get('/api/config', (req, res) => {
     callbackUrl: config.callbackUrl,
     idpInitiatedUrl: config.idpInitiatedUrl || null,
     samlConfigured: samlStatus.configured,
+    samlLogoutConfigured: samlLogoutStatus.configured,
+    samlLogoutMessage: samlLogoutStatus.message,
   });
 });
 

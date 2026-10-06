@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Paxafe · SSO demo</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <main class="shell">
+    <header><span class="mark">N</span><span>Paxafe <small>IDENTITY LAB</small></span><span class="status"><i></i> SAML DEMO</span></header>
+    <section class="hero">
+      <p class="eyebrow">AUTHENTICATION / TAKE-HOME</p>
+      <h1>One identity.<br><em>Two ways in.</em></h1>
+      <p class="lede">Explore how a SAML Service Provider and Identity Provider establish a trusted session.</p>
+    </section>
+    <section id="signed-out" class="panel">
+      <div class="panel-title"><span>01</span><div><h2>Choose a sign-in flow</h2><p>Both flows use the same Auth0 tenant and SAML connection.</p></div></div>
+      <div class="flows">
+        <article><span class="tag">SP-INITIATED</span><h3>Start from this app</h3><p>The app sends an AuthnRequest to Auth0. Auth0 returns a signed assertion to the ACS.</p><a class="button primary" href="/auth/saml/login">Login with SSO <b>↗</b></a></article>
+        <article><span class="tag">IDP-INITIATED</span><h3>Start from Auth0</h3><p>Open the Auth0 dashboard and launch this app tile. Auth0 posts an unsolicited assertion to the ACS.</p><a id="idp-launch" class="button primary" href="#" hidden>Launch Auth0 app <b>↗</b></a><div class="hint">Configure the Auth0 SAML app's <strong>Application Callback URL</strong> as <code id="acs-url"></code>, then use its Test / My Apps entry point.</div></article>
+      </div>
+      <p id="message" class="message" hidden></p>
+    </section>
+    <section id="signed-in" class="panel" hidden>
+      <div class="panel-title"><span>02</span><div><h2>Authenticated session</h2><p id="flow-label"></p></div></div>
+      <div class="identity"><div class="avatar" id="avatar">?</div><div><small>LOGGED IN AS</small><h3 id="identity-name"></h3><p id="identity-email"></p></div><span class="verified">✓ Assertion accepted</span></div>
+      <details><summary>Assertion identity details</summary><pre id="claims"></pre></details>
+      <form action="/auth/logout" method="post"><button class="button secondary">End local session</button></form>
+    </section>
+    <footer><span>LOCAL DEMO · AUTH0 AS IdP · NODE AS SP</span><a href="/auth/saml/metadata">SP METADATA ↗</a></footer>
+  </main>
+  <script src="/app.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,20 @@
+{
+  "name": "paxafe-saml-demo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Interview assignment starter: Auth0 SAML IdP and Node.js SP demo",
+  "main": "backend/src/server.js",
+  "scripts": {
+    "start": "node backend/src/server.js",
+    "dev": "node --watch backend/src/server.js",
+    "test": "node --test backend/test/*.test.js"
+  },
+  "engines": { "node": ">=20" },
+  "dependencies": {
+    "@node-saml/passport-saml": "^5.0.0",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-session": "^1.18.1",
+    "passport": "^0.7.0"
+  }
+}

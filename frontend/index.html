@@ -8,11 +8,18 @@
 </head>
 <body>
   <main class="shell">
-    <header><span class="mark">N</span><span>Paxafe <small>IDENTITY LAB</small></span><span class="status"><i></i> SAML DEMO</span></header>
+    <header><span class="mark">P</span><span>Paxafe</span><span class="status"><i></i> SAML DEMO</span></header>
     <section class="hero">
-      <p class="eyebrow">AUTHENTICATION / TAKE-HOME</p>
-      <h1>One identity.<br><em>Two ways in.</em></h1>
-      <p class="lede">Explore how a SAML Service Provider and Identity Provider establish a trusted session.</p>
+      <p class="eyebrow">PAXAFE CONTXT / SECURE ACCESS</p>
+      <h1>Contextual intelligence.<br><em>Connected securely.</em></h1>
+      <p class="lede">Explore how SAML single sign-on connects your organization to PAXAFE CONTXT.</p>
+    </section>
+    <section class="panel about" aria-labelledby="about-title">
+      <div class="panel-title"><span>PX</span><div><h2 id="about-title">PAXAFE intelligence for the cold chain</h2></div></div>
+      <p>PAXAFE is an AI-enabled, device-agnostic risk-management platform that reduces product loss, improves operational efficiency, and optimizes decision making for cold chain shippers and carriers.</p>
+      <p>PAXAFE's B2B platform, CONTXT, contextualizes location and condition monitoring data, quantifies shipment and lane risk, predicts OTIF, and automates passive logger temperature management.</p>
+      <p>Unlike sensor-enabled visibility providers that leave enterprises “data rich but insights poor,” PAXAFE understands that operationalizing visibility is not a human problem—it’s a machine problem. PAXAFE exists to inject a contextual intelligence layer into the visibility control tower.</p>
+      <a href="https://www.paxafe.com" target="_blank" rel="noopener noreferrer">Visit paxafe.com ↗</a>
     </section>
     <section id="signed-out" class="panel">
       <p id="logout-result" class="logout-result" hidden>Your local app session has ended.</p>
@@ -30,7 +37,7 @@
       <form action="/auth/logout" method="post"><button class="button secondary">Log out</button></form>
       <p id="logout-status" class="logout-status"></p>
     </section>
-    <footer><span>LOCAL DEMO · AUTH0 AS IdP · NODE AS SP</span><a href="/auth/saml/metadata">SP METADATA ↗</a></footer>
+    <footer><span>LOCAL DEMO · AUTH0 AS IdP · NODE AS SP</span></footer>
   </main>
   <script src="/app.js" defer></script>
 </body>

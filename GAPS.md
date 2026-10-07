@@ -1,4 +1,14 @@
-# Configuration and production gaps
+# Assignment checks and production gaps
+
+## Assignment checks still outstanding
+
+| Check | Current status / action |
+|---|---|
+| Live Auth0 validation | No tenant or test account was supplied. Configure a disposable tenant and verify both login flows before describing the integration as end-to-end tested. |
+| Walkthrough | A tracked WebM recording is present and is 2:26, within the five-minute limit. Confirm by watching it that it clearly shows both required login flows. |
+| Final GitHub submission | Incremental commits are present, but the current checkout has staged and unstaged changes and an untracked checklist. Review, commit, and push the intended final state before sending the repository link. |
+
+## Production follow-ups
 
 | Gap | Demo behavior | Before production |
 |---|---|---|

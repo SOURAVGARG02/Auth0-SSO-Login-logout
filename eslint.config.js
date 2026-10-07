@@ -22,6 +22,14 @@ module.exports = [
     },
   },
   {
+    files: ['backend/test/**/*.js'],
+    languageOptions: {
+      globals: {
+        jest: 'readonly',
+      },
+    },
+  },
+  {
     files: ['frontend/**/*.js'],
     languageOptions: {
       ecmaVersion: 2022,

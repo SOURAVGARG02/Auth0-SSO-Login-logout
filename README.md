@@ -2,6 +2,20 @@
 
 A small Node.js Service Provider (SP) and browser UI for exercising Auth0 as a SAML Identity Provider. It supports SP-initiated login and unsolicited IdP-initiated login, displays selected assertion identity claims, and provides local logout with an optional redirect through Auth0 logout.
 
+## Assignment acceptance criteria
+
+| Criterion | Status | Notes |
+|---|---|---|
+| Node.js SAML Service Provider, SP metadata, ACS, and protected identity endpoint | Implemented | Routes are under `/auth`; see the implementation boundaries below. |
+| SP-initiated and IdP-initiated login paths | Implemented; live verification pending | The UI and this README explain both flows. A configured Auth0 tenant is still needed to test them end to end. |
+| SAML validation and replay protection | Implemented; live verification pending | Uses the SAML library for signature and protocol validation, checks the assertion recipient, and rejects reused assertion IDs. |
+| Session and identity handling | Implemented | Uses an in-memory Express session and displays selected claims; no database is required for this assignment. |
+| Decision log and tradeoffs | Documented | See [DECISIONS.md](./DECISIONS.md). |
+| Auth0 tenant and both login flows tested end to end | Not completed | No tenant or test account was supplied. Configure a disposable tenant and verify both flows before claiming live integration. |
+| Walkthrough recording and incremental Git history | Completed | A walkthrough is included in the repository, and the work has incremental commits. |
+| Logout in both directions (stretch goal) | Implemented; tenant verification pending | SAML SLO is optional and depends on tenant support/configuration. Local logout remains available. |
+| Local automated checks | Passed | `npm test` (41 tests) and `npm run lint`. These do not replace live Auth0 integration testing. |
+
 ## Requirements and local setup
 
 Requires Node.js 20 or later.

@@ -1,4 +1,5 @@
 node_modules/
+coverage/
 .env
 saml-sp-key.pem
 saml-sp-cert.pem
